@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { fetchTopHeadLines, fetchArticles } from "./Api";
+import AppNavBar from "./components/Navbar";
+import ArticleList from "./components/ArticleList";
+import FilterBar from "./components/FilterBar";
+import {Container} from 'react-bootstrap';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+const App = () => {
+  const [articles, setArticles ] = useState([]);
+
+  useEffect(()=>{
+    const getTopHeadlines = async () => {
+      const headlines = await fetchTopHeadLines();
+      setArticles(headlines);
+    }
+    getTopHeadlines();
+  },[]);
+
+  const handleFilter = async (query) => {
+    const filteredArticle = await fetchArticles({ q : query });
+    setArticles(filteredArticle);
+  };
+
+  return(
+    <div>
+      <AppNavBar/>
+      <Container className="mt-3">
+        <FilterBar onFilter={handleFilter} />
+        <ArticleList articles={articles}/>
+      </Container>
     </div>
-  );
+  )
 }
 
 export default App;
